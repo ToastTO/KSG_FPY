@@ -1,0 +1,5 @@
+/yolov5/
+*.pt
+*.mp4
+*.jpg
+*.torchscript
