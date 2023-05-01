@@ -8,7 +8,7 @@ from picamera2 import Picamera2
 class KSG_torch:
     def __init__(self):
         # Model init
-        self.model = torch.hub.load('../yolov5', 'custom', path='../model/best.pt', source='local', device='cpu')
+        self.model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local', device='cpu')
         self.model.conf = 0.25  # NMS confidence threshold
         self.model.iou = 0.45  # NMS IoU threshold
         self.model.agnostic = False  # NMS class-agnostic
@@ -33,16 +33,18 @@ class KSG_torch:
 
         # Music output setup
         pygame.mixer.init()
-        pygame.mixer.music.load('Z7E8E5U-beep-beep.mp3')
+        pygame.mixer.music.load('Testing_code/Z7E8E5U-beep-beep.mp3')
     
     def __str__(self):
-        return(self.model)
+        return("model info...")
+    
     def __call__(self, mode):     #run inference
         pass
+
     def inference(self,image):
         # run model interence, input can be (3,640,640) or (N,3,640,640)
         results = self.model(image)
-        return results, len(results)
+        return results
     
     def draw_bbox(self, im, point1, point2, cls_name, conf):
 
@@ -52,8 +54,8 @@ class KSG_torch:
 
         #cls
         msg = cls_name + "{:.2f}%".format(conf)
-        x, _ = point1 + 3
-        _, y = point2 - 3
+        x = int(point1[0]) + 3
+        y = int(point1[1]) - 3
         im = cv2.putText(im, msg, (x,y), 0, 0.6, (50,50,50), 3)
         im = cv2.putText(im, msg, (x,y), 0, 0.6, self.cls_color[cls_name], 1)
         return im
@@ -64,9 +66,9 @@ class KSG_torch:
             "fire":   0.3,
             "hand":   -0.5,
             "human":  -0.5,
-            "pot":    0.2
+            "pot":    -0.2
         }
-        threshold = (cls_w["fire"]+cls_w["human"]+cls_w["pot"])/2
+        threshold = 0.45
         
         flag = 0
 
@@ -81,11 +83,11 @@ class KSG_torch:
             fps = round(1.00/(currTime - prevTime),2)
 
             # capture frame
-            im = self.picam.capture_arrray()
+            im = self.picam.capture_array()
             im = cv2.convertScaleAbs(im, 10, 0.98)
 
             # singel inference
-            result = self.inference(im)[0]
+            result = self.inference(im).xyxy[0]
 
             # record what detected in each image
             log_dict = {
@@ -121,11 +123,11 @@ class KSG_torch:
                 im = cv2.putText(im, "SAFE", (10,20), 0, 0.6, (50,50,50),5)
                 im = cv2.putText(im, "SAFE", (10,20), 0, 0.6, (0,255,0),2)
             # print FPS
-            im = cv2.putText(im, f'FPS: {fps}', (10, 50), 0, 0.6, (255, 0, 0), 5)
+            im = cv2.putText(im, f'FPS: {fps}', (10, 50), 0, 0.6, (50, 50, 50), 5)
             im = cv2.putText(im, f'FPS: {fps}', (10, 50), 0, 0.6, (255, 0, 0), 2)
             # print flag
-            im = cv2.putText(im,f'Score: {flag,2}', (10,80), 0, 0.6, (50,50,50),5)
-            im = cv2.putText(im,f'Score: {flag,2}', (10,80), 0, 0.6, (255, 0, 0),2)
+            im = cv2.putText(im,f'Score: {flag}', (10,80), 0, 0.6, (50,50,50),5)
+            im = cv2.putText(im,f'Score: {flag}', (10,80), 0, 0.6, (255, 0, 0),2)
             
             cv2.imshow("KSG Live Streaming",im)
                 
