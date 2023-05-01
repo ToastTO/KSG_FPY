@@ -3,9 +3,10 @@ import time
 import torch
 import numpy
 from picamera2 import Picamera2
+import pygame
 
 # Load model
-model = torch.hub.load('yolov5', 'custom', path='best.onnx', source='local', device='cpu')
+model = torch.hub.load('../yolov5', 'custom', path='../model/best.onnx', source='local', device='cpu')
 
 # Model configuration
 model.conf = 0.25  # NMS confidence threshold
@@ -33,6 +34,10 @@ picam.preview_configuration.main.format = "RGB888"
 picam.preview_configuration.align()
 picam.configure("preview")
 
+# Music output setup
+pygame.mixer.init()
+pygame.mixer.music.load('Z7E8E5U-beep-beep.mp3')
+
 # variable setup
 # cls_color: dictionary of objects
 # weight_fire: 
@@ -54,6 +59,11 @@ picam.start()
 currTime = time.time()
 prevTime = None
 flag = 0 # initialize flag for calculation
+
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+speed = 1
+raw_output = cv2.VideoWriter('raw_output.mp4',fourcc,speed,(640,640))
+processed_output = cv2.VideoWriter('processed_output.mp4',fourcc,speed,(640,640))
 while True:
     prevTime = currTime
     currTime = time.time()
@@ -64,6 +74,7 @@ while True:
     # alpha(num, [0,2]): contrast
     # beta(num, [-127,127]): brightness
     im = cv2.convertScaleAbs(im, 10, 0.98)
+    raw_output.write(im)
     # AI inference
     result = model(im)
     # result.print()
@@ -99,13 +110,16 @@ while True:
     if round(flag,2) > threshold+0.01:
         im = cv2.putText(im, "CAUTION", (10,20), 0, 0.6, (50,50,50),5)
         im = cv2.putText(im, "CAUTION", (10,20), 0, 0.6, (0,0,255),2)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy() == True:
+            continue
     else:
         im = cv2.putText(im, "SAFE", (10,20), 0, 0.6, (50,50,50),5)
         im = cv2.putText(im, "SAFE", (10,20), 0, 0.6, (0,255,0),2)
 
     im = cv2.putText(im, f'FPS: {round(fps,2)}',  (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 1, cv2.LINE_AA)
     cv2.imshow("Camera", im)
-
+    processed_output.write(im)
     if cv2.waitKey(1)==ord('q'):
         break
 cv2.destroyAllWindows()
