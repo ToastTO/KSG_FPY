@@ -15,3 +15,6 @@ Raspberry Pi, MIPI RGB camera, Display Monitor, keyboard, mouse
 # Installation 
 
 # How to start
+
+# Credit 
+YOLOv5: https://github.com/ultralytics/yolov5
