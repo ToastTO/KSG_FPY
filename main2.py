@@ -34,11 +34,11 @@ picam.preview_configuration.align()
 picam.configure("preview")
 
 # variable setup
-# cls_color: dictionary
+# cls_color: dictionary of objects
 # weight_fire: 
 # weight_human: 
 # weight_pot: 
-#
+# 
 cls_color = {
   "fire":    (14,14,255),
   "hand":   (14,88,207),
