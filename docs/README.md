@@ -1,4 +1,4 @@
-Kitchen Safety Guided
+# Kitchen Safety Guided <br>
 The Kitchen Safety Guided is an AI-embedded surveillance system for kitchen safety monitoring. By using the RGB MIPI camera, the system can check the existence of unattended fire in real-time.
 
 # Features
