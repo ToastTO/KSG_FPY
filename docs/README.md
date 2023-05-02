@@ -17,17 +17,17 @@ OpenCV, NumPy, PiCamera2, PyGame
 
 # Installation 
 First clone our repository and download the required library by following command:
-'''
+```
 git clone https://github.com/ToastTO/KSG_FYP
 cd KSG_FYP
 pip install -r docs/requirements.txt
-'''
+```
 Since our AI using YOLOv5 framework by ultralytics, downloading the ultralytics/yolov5 repository is needed as well. Details installation of yolov5 can found at its repository: https://github.com/ultralytics/yolov5
-'''
+```
 git clone https://github.com/ultralytics/yolov5  # clone inside KSG_FYP repository
 cd yolov5
 pip install -r requirements.txt  # install
-'''
+```
 
 # Quick start
 after insalling the required repo and libraries, connect your MIPI camera and run the following command in terminal:
