@@ -35,6 +35,13 @@ class KSG:
             "pot":    (104,207,14)
         }
 
+        self.cls_dict = {
+            0: "fire",
+            1: "hand",
+            2: "human",
+            3: "pot"
+        }
+
         #picam init
         self.picam = Picamera2()
         self.picam.preview_configuration.main.size = (640, 640)
@@ -52,38 +59,41 @@ class KSG:
     def __call__(self, mode, path=None):     #run inference
         if mode == "live":
             print("now start KSG live Streaming")
+            print(f"using model:{self.model_name}")
+            print("Press \"q\" to exit the loop")
             self.live_stream()
             print("live streaming finish")
 
         if mode == "file":
             pass
 
-    def preprocess(image):
-        print(image.shape)
+    def preprocess(self, image):
+        # print(image.shape)
         # data process
         image = cv2.resize(image, (640,640), cv2.INTER_LINEAR)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = image.astype(np.float32)
         image /= 255.0
-        print(image.shape)
+        # print(image.shape)
         image = np.expand_dims(image, axis=0)
         image = image.transpose(0,3,1,2).astype(np.float32)
-        print(image.shape)    # onnx input
+        # print(image.shape)    # onnx input
         return image
 
-    def inference(self,input):
+    def inference(self,X):
         # run model interence, input can be (3,640,640) or (N,3,640,640)
         if self.model_name == "torch":
-            results = self.model(input)
+            results = self.model(X)
 
         elif self.model_name == "onnx":
-            input = {self.inname[0]: input}
+            input = {self.inname[0]: X}
             outputs = self.ort_sess.run(self.outname, input)
             results = non_max_suppression(outputs)
         return results
     
     # input (image, [x, y, x, y, conf, class])
     def draw_bbox(self, im, dectection):
+        # unpack points, cls name and conf
         upL = (dectection[0].astype(int), dectection[1].astype(int))     # top left
         BottomR = (dectection[2].astype(int), dectection[3].astype(int))     # bottom right
         conf = dectection[4]*100              # confidance
@@ -93,14 +103,14 @@ class KSG:
 
         # bBox
         im = cv2.rectangle(im, upL, BottomR, (50,50,50), 3)
-        im = cv2.rectangle(im, upL, BottomR, self.cls_color[color], 1)
+        im = cv2.rectangle(im, upL, BottomR, color, 2)
 
         #cls
         msg = class_name + "{:.2f}%".format(conf)
-        x = int(upL[0]) + 3
+        x = int(upL[0]) + 10
         y = int(BottomR[1]) - 10
         im = cv2.putText(im, msg, (x,y), 0, 0.6, (50,50,50), 3)
-        im = cv2.putText(im, msg, (x,y), 0, 0.6, self.cls_color[color], 1)
+        im = cv2.putText(im, msg, (x,y), 0, 0.6, color, 2)
         return im
 
     def live_stream(self):
@@ -131,10 +141,10 @@ class KSG:
 
             # singel inference
             if self.model_name == "torch":
-                result = self.inference(im).xyxy[0]
+                result = self.inference(im).xyxy[0].numpy()
             elif self.model_name == "onnx":
-                im = self.preprocess(im)
-                result = self.inference(im)
+                x = self.preprocess(image=im)
+                result = self.inference(x)[0]
 
             # record what detected in each image
             log_dict = {
@@ -145,7 +155,7 @@ class KSG:
             }
 
             # draw box for each detected object
-            for detect_ret in result.numpy():
+            for detect_ret in result:
                 
                 log_dict[detect_ret[5]] = True
                 
@@ -160,17 +170,17 @@ class KSG:
             # print algorithm result
             if flag > threshold:
                 im = cv2.putText(im, "CAUTION", (10,20), 0, 0.6, (50,50,50),5)
-                im = cv2.putText(im, "CAUTION", (10,20), 0, 0.6, (0,0,255),2)
+                im = cv2.putText(im, "CAUTION", (10,20), 0, 0.6, (0,0,255),3)
                 pygame.mixer.music.play()
             else:
                 im = cv2.putText(im, "SAFE", (10,20), 0, 0.6, (50,50,50),5)
-                im = cv2.putText(im, "SAFE", (10,20), 0, 0.6, (0,255,0),2)
+                im = cv2.putText(im, "SAFE", (10,20), 0, 0.6, (0,255,0),3)
             # print FPS
             im = cv2.putText(im, f'FPS: {fps}', (10, 50), 0, 0.6, (50, 50, 50), 5)
-            im = cv2.putText(im, f'FPS: {fps}', (10, 50), 0, 0.6, (255, 0, 0), 2)
+            im = cv2.putText(im, f'FPS: {fps}', (10, 50), 0, 0.6, (255, 0, 0), 3)
             # print flag
             im = cv2.putText(im,f'Score: {flag}', (10,80), 0, 0.6, (50,50,50),5)
-            im = cv2.putText(im,f'Score: {flag}', (10,80), 0, 0.6, (255, 0, 0),2)
+            im = cv2.putText(im,f'Score: {flag}', (10,80), 0, 0.6, (255, 0, 0),3)
             
             cv2.imshow("KSG Live Streaming",im)
                 

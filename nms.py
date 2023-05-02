@@ -99,7 +99,7 @@ def non_max_suppression(prediction,
 
         # If none remain process next image
         if not x.shape[0]:
-            print(x.shape)
+        #   print(x.shape)
             continue
 
         # Compute conf
