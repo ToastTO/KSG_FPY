@@ -2,7 +2,6 @@ import cv2
 import time
 import torch
 import numpy
-from picamera2 import Picamera2
 
 # Load model
 model = torch.hub.load('yolov5', 'custom', path='best.onnx', source='local', device='cpu')

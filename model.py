@@ -1,21 +1,31 @@
 import cv2
 import time
 import torch
-import numpy
+import numpy as np
 import pygame
-from picamera2 import Picamera2
+import onnx
+import onnxruntime as ort
+# from picamera2 import Picamera2
 
-class KSG_torch:
-    def __init__(self):
-        # Model init
-        self.model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local', device='cpu')
-        self.model.conf = 0.25  # NMS confidence threshold
-        self.model.iou = 0.45  # NMS IoU threshold
-        self.model.agnostic = False  # NMS class-agnostic
-        self.model.multi_label = True  # NMS multiple labels per box
-        self.model.max_det = 100  # maximum number of detections per image
-        self.model.amp = False  # Automatic Mixed Precision (AMP) inference
-        self.cls_dict = self.model.names
+class KSG:
+    def __init__(self, model):
+        self.model_name = model
+        if model == "torch":
+            # toch Model init
+            self.model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local', device='cpu')
+            self.model.conf = 0.25  # NMS confidence threshold
+            self.model.iou = 0.45  # NMS IoU threshold
+            self.model.agnostic = False  # NMS class-agnostic
+            self.model.multi_label = True  # NMS multiple labels per box
+            self.model.max_det = 100  # maximum number of detections per image
+            self.model.amp = False  # Automatic Mixed Precision (AMP) inference
+            self.cls_dict = self.model.names
+        elif model == "onnx":
+            self.model = onnx.load("model/best.onnx")
+            onnx.checker.check_model(self.model)
+            self.ort_sess = ort.InferenceSession('model/best.onnx')
+            self.outname = [i.name for i in self.ort_sess.get_outputs()]
+            self.inname = [i.name for i in self.ort_sess.get_inputs()]
 
         self.cls_color = {
             "fire":    (14,14,255),
@@ -25,11 +35,11 @@ class KSG_torch:
         }
 
         #picam init
-        self.picam = Picamera2()
-        self.picam.preview_configuration.main.size = (640, 640)
-        self.picam.preview_configuration.main.format = "RGB888"
-        self.picam.preview_configuration.align()
-        self.picam.configure("preview")
+        # self.picam = Picamera2()
+        # self.picam.preview_configuration.main.size = (640, 640)
+        # self.picam.preview_configuration.main.format = "RGB888"
+        # self.picam.preview_configuration.align()
+        # self.picam.configure("preview")
 
         # Music output setup
         pygame.mixer.init()
@@ -38,12 +48,26 @@ class KSG_torch:
     def __str__(self):
         return("model info...")
     
-    def __call__(self, mode):     #run inference
-        pass
+    def __call__(self, mode, path=None):     #run inference
+        if mode == "live":
+            print("now start KSG live Streaming")
+            self.live_stream()
+            print("live streaming finish")
 
-    def inference(self,image):
+        if mode == "file":
+            pass
+
+    def inference(self,input):
         # run model interence, input can be (3,640,640) or (N,3,640,640)
-        results = self.model(image)
+        if self.model_name == "torch":
+            results = self.model(input)
+
+        elif self.model_name == "onnx":
+            input = {self.inname[0]: input}
+            outputs = self.ort_sess.run(self.outname, input)
+            results = outputs
+            # results = non_max_suppression(outputs)
+
         return results
     
     def draw_bbox(self, im, point1, point2, cls_name, conf):
@@ -83,7 +107,7 @@ class KSG_torch:
             fps = round(1.00/(currTime - prevTime),2)
 
             # capture frame
-            im = self.picam.capture_array()
+            # im = self.picam.capture_array()
             im = cv2.convertScaleAbs(im, 10, 0.98)
 
             # singel inference
@@ -133,3 +157,27 @@ class KSG_torch:
                 
         cv2.destroyAllWindows()
         return
+    
+def video_path2arrary(path):
+    cap = cv2.VideoCapture(path)
+    
+    N = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    W  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    H = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    array = np.zeros((N,H,W,3))
+    # print(array.shape)
+    for i in range(N):
+        ret, frame = cap.read()
+        if ret:
+            # cv2.imshow('frame',frame)
+            # cv2.waitKey(0)
+            array[i,...] = frame
+            # print(i)
+        else:
+            break
+
+    # When everything done, release the capture
+    cap.release()
+    cv2.destroyAllWindows()
+    return array
