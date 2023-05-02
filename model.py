@@ -5,14 +5,14 @@ import numpy as np
 import pygame
 import onnx
 import onnxruntime as ort
-# from picamera2 import Picamera2
+from picamera2 import Picamera2
 
 class KSG:
     def __init__(self, model):
         self.model_name = model
         if model == "torch":
             # toch Model init
-            self.model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local', device='cpu')
+            self.model = torch.hub.load('yolov5', 'custom', path='model/best.pt', source='local', device='cpu', _verbose=False) # load silently
             self.model.conf = 0.25  # NMS confidence threshold
             self.model.iou = 0.45  # NMS IoU threshold
             self.model.agnostic = False  # NMS class-agnostic
@@ -35,11 +35,11 @@ class KSG:
         }
 
         #picam init
-        # self.picam = Picamera2()
-        # self.picam.preview_configuration.main.size = (640, 640)
-        # self.picam.preview_configuration.main.format = "RGB888"
-        # self.picam.preview_configuration.align()
-        # self.picam.configure("preview")
+        self.picam = Picamera2()
+        self.picam.preview_configuration.main.size = (640, 640)
+        self.picam.preview_configuration.main.format = "RGB888"
+        self.picam.preview_configuration.align()
+        self.picam.configure("preview")
 
         # Music output setup
         pygame.mixer.init()
@@ -107,7 +107,7 @@ class KSG:
             fps = round(1.00/(currTime - prevTime),2)
 
             # capture frame
-            # im = self.picam.capture_array()
+            im = self.picam.capture_array()
             im = cv2.convertScaleAbs(im, 10, 0.98)
 
             # singel inference
