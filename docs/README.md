@@ -36,7 +36,7 @@ pip install -r requirements.txt  # install
 # Quick start
 After installing the required repositories and libraries, connect your MIPI camera and run the following command in terminal:
 ```
-python main.py -o live -m torch
+python main.py
 ```
 A live streaming window will show up. Press 'q' on the window to end the program and exit the streaming.
 
