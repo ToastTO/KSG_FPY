@@ -12,7 +12,14 @@ The MIPI RGB camera will first collect the raw data and create an RGB numpy arra
 # Component need
 Raspberry Pi, MIPI RGB camera, Display Monitor, keyboard, mouse 
 
+# Library used
+
 # Installation 
+```
+git clone https://github.com/ToastTO/KSG_FPY
+cd KSG_FPY
+pip install -r requirements.txt
+```
 
 # Quick start
 after insalling the required repo and libraries, connect your MIPI camera and run the following command in terminal:
