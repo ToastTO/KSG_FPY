@@ -40,7 +40,10 @@ python main.py
 ```
 A live streaming window will show up. Press 'q' on the window to end the program and exit the streaming.
 
-you can also use .onnx AI model for inferencing. Type `python main.py -h` for more infomation.
+you can also use .onnx AI model for inferencing as well
+```
+python main.py -o
+```
 
 # Credit 
 Some libraries and online resources are used in this poject:
