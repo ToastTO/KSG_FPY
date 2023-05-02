@@ -2,7 +2,7 @@
 The Kitchen Safety Guided is an AI-embedded surveillance system for kitchen safety monitoring. By using the RGB MIPI camera, the system can check the existence of unattended fire in real-time.
 
 # Features
-- Real-time unattended fire detection: The system can recognize 4 object which is fire, human, hand, and pot. If there is nobody taking care of the fire, the system can respond immediately, which can remind the user as soon as possible. <br>
+- **Real-time unattended fire detection:** The system can recognize 4 object which is fire, human, hand, and pot. If there is nobody taking care of the fire, the system can respond immediately, which can remind the user as soon as possible. <br>
 - **Lower price:** Compare to the recent kitchen safety equipment, kitchen Safety Guided uses the RGB camera instead of expensive sensor or fire suppression equipment, which is affordable for household usage. <br>
 - **user-friendly:** our system will output through a monitor, user can easily turn on and control the system and get the message from the monitor
 
@@ -16,11 +16,18 @@ Raspberry Pi, MIPI RGB camera, Display Monitor, keyboard, mouse
 OpenCV, NumPy, PiCamera2, PyGame
 
 # Installation 
-```
-git clone https://github.com/ToastTO/KSG_FPY
-cd KSG_FPY
-pip install -r requirements.txt
-```
+First clone our repository and download the required library by following command:
+'''
+git clone https://github.com/ToastTO/KSG_FYP
+cd KSG_FYP
+pip install -r docs/requirements.txt
+'''
+Since our AI using YOLOv5 framework by ultralytics, downloading the ultralytics/yolov5 repository is needed as well. Details installation of yolov5 can found at its repository: https://github.com/ultralytics/yolov5
+'''
+git clone https://github.com/ultralytics/yolov5  # clone inside KSG_FYP repository
+cd yolov5
+pip install -r requirements.txt  # install
+'''
 
 # Quick start
 after insalling the required repo and libraries, connect your MIPI camera and run the following command in terminal:

@@ -76,7 +76,7 @@ class KSG_torch:
         currTime = time.time()
         prevTime = None
         # press "q" to exit loop
-        while cv2.waitKey(1) != ord('q'):
+        while cv2.waitKey(1) != ord('q') and cv2.getWindowProperty('image',cv2.WND_PROP_VISIBLE) < 1:
             # calulcation FPS
             prevTime = currTime
             currTime = time.time()
@@ -133,4 +133,3 @@ class KSG_torch:
                 
         cv2.destroyAllWindows()
         return
-
