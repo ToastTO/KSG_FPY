@@ -1,5 +1,5 @@
-# Kitchen Safety Guided <br>
-The Kitchen Safety Guided is an AI-embedded surveillance system for kitchen safety monitoring. By using the RGB MIPI camera, the system can check the existence of unattended fire in real-time.
+# Kitchen Safety Guide <br>
+The Kitchen Safety Guide is an AI-embedded surveillance system for kitchen safety monitoring. By using the RGB MIPI camera, the system can check the existence of unattended fire in real-time.
 
 # Features
 - **Real-time unattended fire detection:** The system can recognize 4 object which is fire, human, hand, and pot. If there is nobody taking care of the fire, the system can respond immediately, which can remind the user as soon as possible. <br>
@@ -7,37 +7,40 @@ The Kitchen Safety Guided is an AI-embedded surveillance system for kitchen safe
 - **user-friendly:** our system will output through a monitor, user can easily turn on and control the system and get the message from the monitor
 
 # How it works
-The MIPI RGB camera will first collect the raw data and create an RGB numpy array. After that,each image will be resized to 1x3x640x640, the brightness, contrast, and normalization will be adjusted. The adjusted image will undergo a custom-trained YOLOv5 AI model to detect the object in the image. The algorithm will calculate the danger score of the environment depending on the object. At last,the score and the result will be shown on the monitor to remind users.
+The MIPI RGB camera will first collect the raw data and create an RGB numpy array. After that, each image will be resized to 1x3x640x640 array. The brightness, contrast, and normalization will be adjusted. The adjusted image will undergo a custom-trained YOLOv5 AI model to detect the object in the image. The algorithm will calculate the danger score of the environment depending on the object. At last,the score and the result will be shown on the monitor to remind users via visual warining and beeping sound.
 
 # Component need
-Raspberry Pi, MIPI RGB camera, Display Monitor, keyboard, mouse 
+- Raspberry Pi 4
+- MIPI RGB camera
+- Display Monitor (HDMI/ mini-HDMI recommended)
+- Keyboard and mouse 
 
 # Library used
 OpenCV, NumPy, PiCamera2, PyGame
 
 # Installation 
-First clone our repository and download the required library by following command:
-'''
+First, clone repository and download the required library by following command:
+```
 git clone https://github.com/ToastTO/KSG_FYP
 cd KSG_FYP
 pip install -r docs/requirements.txt
-'''
-Since our AI using YOLOv5 framework by ultralytics, downloading the ultralytics/yolov5 repository is needed as well. Details installation of yolov5 can found at its repository: https://github.com/ultralytics/yolov5
-'''
+```
+Since our AI using YOLOv5 framework by ultralytics, downloading the ultralytics/yolov5 repository is needed as well. <br>
+Details installation of yolov5 can found at its repository: https://github.com/ultralytics/yolov5
+```
 git clone https://github.com/ultralytics/yolov5  # clone inside KSG_FYP repository
 cd yolov5
 pip install -r requirements.txt  # install
-'''
+```
 
 # Quick start
-after insalling the required repo and libraries, connect your MIPI camera and run the following command in terminal:
+After installing the required repositories and libraries, connect your MIPI camera and run the following command in terminal:
 ```
 python main.py -o live -m torch
 ```
-a live streaming window will show up. Press 'q' to exit the streaming
+A live streaming window will show up. Press 'q' on the window to end the program and exit the streaming.
 
 you can also use .onnx AI model for inferencing. Type `python main.py -h` for more infomation.
-
 
 # Credit 
 YOLOv5: https://github.com/ultralytics/yolov5
