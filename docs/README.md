@@ -26,11 +26,11 @@ cd KSG_FYP
 pip install -r docs/requirements.txt
 ```
 Since our AI using YOLOv5 framework by ultralytics, downloading the ultralytics/yolov5 repository is needed as well. <br>
-Details installation of yolov5 can found at its repository: https://github.com/ultralytics/yolov5
+Details of installing yolov5 can found at its repository: https://github.com/ultralytics/yolov5
 ```
-git clone https://github.com/ultralytics/yolov5  # clone inside KSG_FYP repository
+git clone https://github.com/ultralytics/yolov5
 cd yolov5
-pip install -r requirements.txt  # install
+pip install -r requirements.txt
 ```
 
 # Quick start
@@ -43,4 +43,5 @@ A live streaming window will show up. Press 'q' on the window to end the program
 you can also use .onnx AI model for inferencing. Type `python main.py -h` for more infomation.
 
 # Credit 
-YOLOv5: https://github.com/ultralytics/yolov5
+Some libraryies are used in this poject:
+- <a href="https://github.com/ultralytics/yolov5">YOLOv5</a>
