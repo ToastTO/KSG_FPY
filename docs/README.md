@@ -45,3 +45,7 @@ you can also use .onnx AI model for inferencing. Type `python main.py -h` for mo
 # Credit 
 Some libraryies are used in this poject:
 - <a href="https://github.com/ultralytics/yolov5">YOLOv5</a>
+- <a href="https://www.pygame.org/">PyGame</a>
+- <a href="https://pytorch.org/get-started/locally">PyTorch</a>
+- <a href="https://pytorch.org/vision/stable/index.html">TorchVision</a>
+- <a href="https://onnx.ai/">ONNX</a>
