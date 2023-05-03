@@ -43,7 +43,7 @@ A live streaming window will show up. Press 'q' on the window to end the program
 you can also use .onnx AI model for inferencing. Type `python main.py -h` for more infomation.
 
 # Credit 
-Some libraryies are used in this poject:
+Some libraries and online resources are used in this poject:
 - <a href="https://github.com/ultralytics/yolov5">YOLOv5</a>
 - <a href="https://www.pygame.org/">PyGame</a>
 - <a href="https://pytorch.org/get-started/locally">PyTorch</a>
