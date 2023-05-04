@@ -44,7 +44,7 @@ class KSG:
 
         # Music output setup
         pygame.mixer.init()
-        pygame.mixer.music.load('Testing_code/Z7E8E5U-beep-beep.mp3')
+        pygame.mixer.music.load('Testing_code/BeepSound.mp3')
     
     def __str__(self):
         return("model info...")
