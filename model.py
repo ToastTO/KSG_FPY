@@ -5,6 +5,7 @@ import numpy as np
 import pygame
 import onnx
 import onnxruntime as ort
+from nms import non_max_suppression
 from picamera2 import Picamera2
 
 class KSG:
@@ -57,6 +58,19 @@ class KSG:
         if mode == "file":
             pass
 
+    def preprocess(image):
+        print(image.shape)
+        # data process
+        image = cv2.resize(image, (640,640), cv2.INTER_LINEAR)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = image.astype(np.float32)
+        image /= 255.0
+        print(image.shape)
+        image = np.expand_dims(image, axis=0)
+        image = image.transpose(0,3,1,2).astype(np.float32)
+        print(image.shape)    # onnx input
+        return image
+
     def inference(self,input):
         # run model interence, input can be (3,640,640) or (N,3,640,640)
         if self.model_name == "torch":
@@ -65,23 +79,28 @@ class KSG:
         elif self.model_name == "onnx":
             input = {self.inname[0]: input}
             outputs = self.ort_sess.run(self.outname, input)
-            results = outputs
-            # results = non_max_suppression(outputs)
-
+            results = non_max_suppression(outputs)
         return results
     
-    def draw_bbox(self, im, point1, point2, cls_name, conf):
+    # input (image, [x, y, x, y, conf, class])
+    def draw_bbox(self, im, dectection):
+        upL = (dectection[0].astype(int), dectection[1].astype(int))     # top left
+        BottomR = (dectection[2].astype(int), dectection[3].astype(int))     # bottom right
+        conf = dectection[4]*100              # confidance
+        cls = int(dectection[5])                    # class index
+        class_name = self.cls_dict[cls]  # class name of that index
+        color = self.cls_color[class_name] 
 
         # bBox
-        im = cv2.rectangle(im, point1, point2, (50,50,50), 3)
-        im = cv2.rectangle(im, point1, point2, self.cls_color[cls_name], 1)
+        im = cv2.rectangle(im, upL, BottomR, (50,50,50), 3)
+        im = cv2.rectangle(im, upL, BottomR, self.cls_color[color], 1)
 
         #cls
-        msg = cls_name + "{:.2f}%".format(conf)
-        x = int(point1[0]) + 3
-        y = int(point1[1]) - 3
+        msg = class_name + "{:.2f}%".format(conf)
+        x = int(upL[0]) + 3
+        y = int(BottomR[1]) - 10
         im = cv2.putText(im, msg, (x,y), 0, 0.6, (50,50,50), 3)
-        im = cv2.putText(im, msg, (x,y), 0, 0.6, self.cls_color[cls_name], 1)
+        im = cv2.putText(im, msg, (x,y), 0, 0.6, self.cls_color[color], 1)
         return im
 
     def live_stream(self):
@@ -111,7 +130,11 @@ class KSG:
             im = cv2.convertScaleAbs(im, 10, 0.98)
 
             # singel inference
-            result = self.inference(im).xyxy[0]
+            if self.model_name == "torch":
+                result = self.inference(im).xyxy[0]
+            elif self.model_name == "onnx":
+                im = self.preprocess(im)
+                result = self.inference(im)
 
             # record what detected in each image
             log_dict = {
@@ -123,15 +146,11 @@ class KSG:
 
             # draw box for each detected object
             for detect_ret in result.numpy():
-                upL = (detect_ret[0].astype(int), detect_ret[1].astype(int))     # top left
-                BottomR = (detect_ret[2].astype(int), detect_ret[3].astype(int))     # bottom right
-                conf = detect_ret[4]*100              # confidance
-                cls = int(detect_ret[5])                    # class index
-                class_name = self.cls_dict[cls]  # class name of that index
-                log_dict[class_name] = True                 # chage logic dictionary
+                
+                log_dict[detect_ret[5]] = True
                 
                 #draw bBox, conf, cls to im
-                im = self.draw_bbox(im, upL, BottomR, class_name, conf)
+                im = self.draw_bbox(im, detect_ret)
             
             pastFlag = pastFlag = flag*0.5 if flag else 0
             flag = pastFlag + (log_dict["human"] or log_dict["hand"])*cls_w["hand"] + log_dict["pot"]*cls_w["pot"] + log_dict["fire"]*cls_w["fire"]

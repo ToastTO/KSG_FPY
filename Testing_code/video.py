@@ -43,6 +43,7 @@ def output_mp4(name, images):
   writer = cv2.VideoWriter('out.avi', fourcc, fps, size, 1)
 
   for i in range(len(images)):
+    cv2.imshow(name,images[i])
     writer.write(images[i])
     
   writer.release()
