@@ -45,6 +45,12 @@ you can also use .onnx AI model for inferencing as well
 python main.py -o
 ```
 
+to show inference result in action, run the command followed by `--display` or `-d` 
+```
+python main.py -d
+```
+type in `python main.py -h` for more information.
+
 # Credit 
 Some libraries and online resources are used in this poject:
 - <a href="https://github.com/ultralytics/yolov5">YOLOv5</a>
