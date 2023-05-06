@@ -38,7 +38,7 @@ After installing the required repositories and libraries, connect your MIPI came
 ```
 python main.py
 ```
-A live streaming window will show up. Press 'q' on the window to end the program and exit the streaming.
+The detection result and FPS will show up in the terminal. When an unattended cooking event is detected, the device will make a beeping sound to warm the user.
 
 you can also use .onnx AI model for inferencing as well
 ```
@@ -49,6 +49,8 @@ to show inference result in action, run the command followed by `--display` or `
 ```
 python main.py -d
 ```
+A live streaming window will show up. Press 'q' on the window to end the program and exit the streaming.
+
 type in `python main.py -h` for more information.
 
 # Credit 
