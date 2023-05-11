@@ -219,7 +219,7 @@ class KSG:
                     im = self.draw_bbox(im, detect_ret)
             
             
-            pastFlag = pastFlag = flag*0.5 if flag else 0
+            pastFlag = flag*0.5 if flag else 0
             flag = pastFlag + (log_dict["human"] or log_dict["hand"])*cls_w["hand"] + log_dict["pot"]*cls_w["pot"] + log_dict["fire"]*cls_w["fire"]
             if flag < 0.05:
                 flag = 0
