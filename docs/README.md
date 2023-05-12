@@ -1,5 +1,5 @@
 # Kitchen Safety Guide <br>
-The Kitchen Safety Guide is an AI-embedded surveillance system for kitchen safety monitoring. By using the RGB MIPI camera, the system can check the existence of unattended fire in real-time.
+The Kitchen Safety Guide is an AI-embedded surveillance system for kitchen safety monitoring. By using the RGB MIPI camera, the system can check the existence of unattended fire in real-time. This project is a FYP by HKUST ECE students.
 
 # Features
 - **Real-time unattended fire detection:** The system can recognize 4 object which is fire, human, hand, and pot. If there is nobody taking care of the fire, the system can respond immediately, which can remind the user as soon as possible. <br>
@@ -53,6 +53,9 @@ A live streaming window will show up. Press 'q' on the window to end the program
 
 type in `python main.py -h` for more information.
 
+# Documentation
+All Documents are in "docs" folder, including the FYP Final Report, Poster, Documentation, and a power point for presentation.
+
 # Credit 
 Some libraries and online resources are used in this poject:
 - <a href="https://github.com/ultralytics/yolov5">YOLOv5</a>
@@ -60,3 +63,12 @@ Some libraries and online resources are used in this poject:
 - <a href="https://pytorch.org/get-started/locally">PyTorch</a>
 - <a href="https://pytorch.org/vision/stable/index.html">TorchVision</a>
 - <a href="https://onnx.ai/">ONNX</a>
+
+# Member
+CHUI, Chi To Anson
+
+CHUNG, Wai Lok
+
+CHOY, Yu Hin
+
+Special Thanks: Professor Mow Wai Ho @ HKUST ECE Department
